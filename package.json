@@ -13,7 +13,8 @@
     "db:studio": "prisma studio",
     "db:test": "node --env-file=.env scripts/test-db.mjs",
     "auth:test": "node --env-file=.env scripts/test-auth.mjs",
-    "projects:test": "node --env-file=.env scripts/test-projects.mjs"
+    "projects:test": "node --env-file=.env scripts/test-projects.mjs",
+    "import:test": "npx tsx scripts/test-import.mjs"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.3",
@@ -22,6 +23,7 @@
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "jszip": "^3.10.2",
     "lucide-react": "^1.45.0",
     "next": "16.3.5",
     "next-auth": "^5.0.0-beta.32",
@@ -32,6 +34,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/jszip": "^3.4.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

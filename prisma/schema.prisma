@@ -91,19 +91,25 @@ model Project {
 }
 
 model ProjectFile {
-  id        String   @id @default(cuid())
-  projectId String   @map("project_id")
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  filePath  String   @map("file_path")
-  fileSize  Int      @map("file_size")
-  language  String?
-  fileHash  String?  @map("file_hash")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id           String   @id @default(cuid())
+  projectId    String   @map("project_id")
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  filePath     String   @map("file_path")
+  relativePath String   @default("") @map("relative_path")
+  filename     String   @default("") @map("file_name")
+  extension    String   @default("") @map("extension")
+  language     String?  @map("language")
+  fileSize     Int      @map("file_size")
+  content      String   @default("") @db.Text @map("content")
+  fileHash     String?  @map("file_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   chunks CodeChunk[]
 
   @@unique([projectId, filePath])
+  @@index([projectId])
+  @@index([projectId, extension])
   @@map("project_files")
 }
 

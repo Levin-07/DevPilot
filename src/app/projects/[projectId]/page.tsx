@@ -11,8 +11,9 @@ import {
   Layers,
   CheckCircle2,
 } from "lucide-react";
-import { getProjectById } from "@/actions/projects";
+import { getProjectById, getProjectFiles } from "@/actions/projects";
 import { ProjectDetailsHeader } from "@/components/projects/ProjectDetailsHeader";
+import { ProjectCodebaseSection } from "@/components/projects/ProjectCodebaseSection";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -53,6 +54,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   }
 
   const project = result.project;
+  const filesResult = await getProjectFiles(projectId);
+  const files = filesResult.success ? filesResult.files : [];
 
   return (
     <div className="space-y-8 pb-12">
@@ -101,7 +104,19 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         </div>
       </div>
 
-      {/* Future Modules Section (UI Placeholders) */}
+      {/* Codebase & File Explorer Section */}
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-lg font-semibold text-white">Project Codebase</h2>
+          <p className="text-xs text-slate-400">
+            Uploaded source code repository, hierarchical directory tree, and file viewer.
+          </p>
+        </div>
+
+        <ProjectCodebaseSection projectId={project.id} files={files} />
+      </div>
+
+      {/* Intelligence & Downstream Modules Section */}
       <div className="space-y-4">
         <div>
           <h2 className="text-lg font-semibold text-white">Project Modules</h2>
@@ -114,8 +129,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
           {/* Module 1: Codebase & ZIP Ingestion */}
           <Card className="border-slate-800/80 bg-slate-900/40 hover:border-slate-700 transition-colors relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4">
-              <Badge variant="default" className="font-mono text-[10px] px-2 py-0.5">
-                Milestone 4 Next
+              <Badge variant="default" className="font-mono text-[10px] px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
+                {files.length > 0 ? "Ingested" : "Ready for Import"}
               </Badge>
             </div>
             <CardHeader>
@@ -130,12 +145,16 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
             <CardContent>
               <div className="rounded-lg border border-slate-800/80 bg-slate-950/60 p-3 text-xs text-slate-400 font-mono space-y-1.5">
                 <div className="flex items-center gap-2 text-slate-300">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-indigo-400" />
-                  <span>Schema Models Ready: ProjectFile & CodeChunk</span>
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                  <span>Phase 4 Ingestion Pipeline Active</span>
                 </div>
                 <div className="flex items-center gap-2 text-slate-300">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-indigo-400" />
-                  <span>Cascading Deletion Enabled</span>
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                  <span>Safe In-Memory Extraction & Zip Slip Defense</span>
+                </div>
+                <div className="flex items-center gap-2 text-slate-300">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                  <span>{files.length} Source Files Indexed</span>
                 </div>
               </div>
             </CardContent>

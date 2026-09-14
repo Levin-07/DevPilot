@@ -202,3 +202,76 @@ export async function deleteProject(projectId: string) {
     return { success: false, error: message };
   }
 }
+
+/**
+ * Retrieve all indexed files for a project belonging to the authenticated user.
+ * Excludes full file content for optimized tree-view performance.
+ */
+export async function getProjectFiles(projectId: string) {
+  try {
+    const userId = await requireAuth();
+
+    const project = await prisma.project.findFirst({
+      where: { id: projectId, userId },
+      select: { id: true },
+    });
+
+    if (!project) {
+      return { success: false, error: "Project not found or access denied.", files: [] };
+    }
+
+    const files = await prisma.projectFile.findMany({
+      where: { projectId },
+      orderBy: { filePath: "asc" },
+      select: {
+        id: true,
+        filePath: true,
+        relativePath: true,
+        filename: true,
+        extension: true,
+        language: true,
+        fileSize: true,
+        createdAt: true,
+      },
+    });
+
+    return { success: true, files };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to fetch files";
+    return { success: false, error: message, files: [] };
+  }
+}
+
+/**
+ * Retrieve the full source code content for a specific file in a project,
+ * verifying that the requesting user owns the parent project.
+ */
+export async function getProjectFileContent(projectId: string, fileId: string) {
+  try {
+    const userId = await requireAuth();
+
+    const file = await prisma.projectFile.findFirst({
+      where: {
+        id: fileId,
+        projectId,
+        project: {
+          userId,
+        },
+      },
+    });
+
+    if (!file) {
+      return {
+        success: false,
+        error: "File not found or access denied.",
+        file: null,
+      };
+    }
+
+    return { success: true, file };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to fetch file content";
+    return { success: false, error: message, file: null };
+  }
+}
+
